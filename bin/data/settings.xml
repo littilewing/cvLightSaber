@@ -1,0 +1,21 @@
+<group>
+	<smooth>6</smooth>
+<group/>
+	<threshold>0</threshold>
+	<color>157, 230, 0, 130</color>
+	<satMin>14</satMin>
+	<satMax>142</satMax>
+	<hueMin>8</hueMin>
+	<hueMax>28</hueMax>
+	<delay>6</delay>
+	<mirror>1</mirror>
+<trackhue>61</trackhue>
+<tracksat>222</tracksat>
+	<trackbri>130</trackbri>
+<trackhue1>28</trackhue1>
+	<tracksat1>137</tracksat1>
+	<trackbri1>234</trackbri1>
+	<trackhue2>165</trackhue2>
+	<tracksat2>159</tracksat2>
+	<trackbri2>234</trackbri2>
+</group>
