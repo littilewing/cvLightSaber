@@ -20,7 +20,7 @@ void BoxObj::setup(int cW,int cH){
     box2d.enableEvents();   // <-- turn on the event listenerc
     box2d.setGravity(100, 0);
     box2d.createGround();
-    box2d.setFPS(30.0);
+//    box2d.setFPS(30.0);
     box2d.registerGrabbing();
     
     // register the listener so that we get the events

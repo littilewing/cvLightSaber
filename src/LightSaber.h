@@ -40,7 +40,7 @@ public:
     Color track;
     
     float scale     =   1.0;//2.0; // サイズ
-    int zanzouCnt   =   16;//残す残像の数
+    int zanzouCnt   =   8;//残す残像の数
 
     
     void show();

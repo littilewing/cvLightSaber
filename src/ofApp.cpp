@@ -4,16 +4,21 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+
+    originCamWidth = 1280;
+    originCamHeight = 720;
+
     
     camWidth = 320;
-    camHeight = 240;
+    camHeight = (int)(originCamHeight /(originCamWidth/camWidth));
+    
 
     displayscale = ofGetScreenWidth()/camWidth;
     
     ofLog(OF_LOG_NOTICE,"w:%f",displayscale);
     
     ofBackground(0, 0, 0);
-    ofSetFrameRate(30);
+//    ofSetFrameRate(30);
     ofShowCursor();
     
     
@@ -22,13 +27,13 @@ void ofApp::setup(){
 //  cameraDeviceID(use another camera )
   vidGrabber.setDeviceID(0);
     
-    vidGrabber.setVerbose(true);
-    vidGrabber.initGrabber(camWidth, camHeight);
+//    vidGrabber.setVerbose(true);
+    vidGrabber.initGrabber(originCamWidth, originCamHeight);
+    
+    fbo.allocate(camWidth, camHeight, GL_RGB);
     
     
     //それぞれの映像情報の大きさを指定してあげます。
-    
-    colorImg.allocate(camWidth, camHeight);
     colorImgHSV.allocate(camWidth, camHeight);
     
     hueImg.allocate(camWidth, camHeight);
@@ -162,26 +167,39 @@ void ofApp::update(){
 
     vidGrabber.update();    //camera update
     
-    //ofVideoGrabber -> ofxCvColorImage
-    colorImg.setFromPixels(vidGrabber.getPixels(), camWidth, camHeight);
-    
-    //ofxCvColorImage -> ofxCvColorImage
-    colorImgHSV = colorImg;
-    colorImgHSV.convertRgbToHsv();
-    //色相、彩度、明度にマッピング
-    colorImgHSV.convertToGrayscalePlanarImages(hueImg, satImg, briImg);
-    //    colorImgHSV.threshold( threshold );
+    if (vidGrabber.isFrameNew())
+    {
+        fbo.begin();
+        if(mirror){
+            vidGrabber.draw(fbo.getWidth(), 0, -fbo.getWidth(), fbo.getHeight());
+        }
+        else{
+         vidGrabber.draw(0, 0, fbo.getWidth(), fbo.getHeight());
+        }
+        fbo.end();
+        
+        ofPixels pix;
+        fbo.readToPixels(pix);
+        
+
+
+        colorImgHSV.setFromPixels(pix);
+        colorImgHSV.convertRgbToHsv();
+        
+        //colorImgHSV.threshold( threshold );
+        
+        //色相、彩度、明度にマッピング
+        colorImgHSV.convertToGrayscalePlanarImages(hueImg, satImg, briImg);
+
+        hueImg.flagImageChanged();
+        satImg.flagImageChanged();
+        briImg.flagImageChanged();
+        
+
+
+    }
     
 
-    hueImg.flagImageChanged();
-    satImg.flagImageChanged();
-    briImg.flagImageChanged();
-    
-    if(mirror){
-        hueImg.mirror(false, true);
-        satImg.mirror(false, true);
-        briImg.mirror(false, true);
-    }
     
     //ピクセルの配列をそれぞれに作成
     unsigned char * huePixels = hueImg.getPixels();
@@ -196,6 +214,7 @@ void ofApp::update(){
         
         if(traceid < t)
             break;
+        
         //ピクセルの色が指定した色と色相と彩度が近ければ、
         //colorTrackedPixelsRedに255を、遠ければ0を代入。
         for (int i=0; i<nPixels; i++) {
@@ -363,48 +382,48 @@ void ofApp::draw(){
 //    ofPushMatrix();
   //  ofScale(2.0, 2.0);
     shader.begin();
-    shader.setUniform1f("brightness", 0.8); // 暗く
+    shader.setUniform1f("brightness", 0.6); // 暗く
     //shader.setUniform1f("brightness", 1.5 ); // 明るく
     
     //sampleImage.draw(0, 0);
     
     
-    
+    float vr = (1440.0/originCamWidth);
     if(mirror){
         //元映像を表示
-        vidGrabber.draw(camWidth*displayscale, 0,-camWidth*displayscale,camHeight*displayscale);
-        
+
+        vidGrabber.draw(originCamWidth *vr,0,-originCamWidth * vr,originCamHeight * vr);
         //HSV系に変換したものを表示
-//        colorImgHSV.draw(camWidth*displayscale, 720,-camWidth/2,camHeight/2);
+//        colorImgHSV.draw(camWidth*displayscale, 0,-camWidth*displayscale,camHeight*displayscale);
         
     }
     else{
        
         //元映像を表示
-        vidGrabber.draw(0, 0,camWidth*displayscale,camHeight*displayscale);
+        vidGrabber.draw(0,0,originCamWidth * vr,originCamHeight * vr);
         
         //HSV系に変換したものを表示
     //    colorImgHSV.draw(camWidth, 0,camWidth/2,camHeight/2);
-        
 
     }
     
-    shader.end();
-    
+
+
     for(int t=0;t<ls.size();t++){
         if(ls[t].delaypos.size() > 0 && ls[t].display )
             ls[t].draw();
     }
-//    ofPopMatrix();
+    shader.end();
+
     
     box.draw();
     
     if(showConsole){
         //二値画像を表示
-        trackedTextureRed.draw(camWidth*displayscale , 360,camWidth/2,camHeight/2);
+        trackedTextureRed.draw(0, originCamHeight * vr,camWidth/4,camHeight/4);
         
         //二値画像の方に輪郭線表示
-        finderRed.draw(camWidth*displayscale ,360 + camWidth/2,camWidth/2,camHeight/2);
+        finderRed.draw(camWidth/4,originCamHeight * vr,camWidth/4,camHeight/4);
 
         
         gui.draw();
@@ -508,9 +527,11 @@ void ofApp::mouseReleased(int x, int y, int button){
     unsigned char * satPixels = satImg.getPixels();
     unsigned char * briPixels = briImg.getPixels();
     
+    float vr = 1440.0/camWidth;
+    
     //クリックした場所の色を追跡する色に設定。
-    x=MIN( x/displayscale,hueImg.width-1);
-    y=MIN( y/displayscale,hueImg.height-1);
+    x=MIN( x/vr,hueImg.width-1);
+    y=MIN( y/vr,hueImg.height-1);
         
     
     if (button==0) {
@@ -538,8 +559,15 @@ void ofApp::mouseReleased(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-ofShowCursor();
+    ofShowCursor();
 
+//    self.displayscale = w/self.camWidth;
+    displayscale = (float)w /camWidth;
+    
+
+
+    ofLog(OF_LOG_NOTICE,"RESIZE1:%d:%f:%f",w,ofGetScreenWidth(),displayscale);
+    ofLog(OF_LOG_NOTICE,"RESIZE2:%f:%f",ofGetScreenWidth(),camWidth);
 }
 
 //--------------------------------------------------------------
@@ -551,3 +579,4 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){ 
 
 }
+

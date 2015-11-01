@@ -25,18 +25,21 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
+
     
     //camera
     ofVideoGrabber vidGrabber;
+    ofFbo fbo;
     
     //カメラの幅と高さ
     int camWidth;
     int camHeight;
+    int originCamWidth;
+    int originCamHeight;
     float displayscale;
     bool showConsole = true;
     
-    //もともとの映像情報
-    ofxCvColorImage colorImg;
+
     
     //HSV系に変換した映像情報
     ofxCvColorImage colorImgHSV;
