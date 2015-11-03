@@ -59,32 +59,33 @@ class ofApp : public ofBaseApp{
     //二値画像
     ofTexture trackedTextureRed;
     
-    //輪郭を判別してくれるメチャクチャ便利なやつです。
+
     ofxCvContourFinder finderRed;
     
     
-    
+    static int const NUM = 2;
     
     /*
      gui
      */
     ofxPanel gui;
-    ofxIntSlider smooth;
-    ofxIntSlider threshold;
+    ofParameterGroup displayset;
+    ofParameterGroup colorset;
+    ofParameterGroup rangeset;
     
+    ofParameter<int> smooth;
+    ofParameter<int> threshold;
+    ofParameter<bool> mirror;
     
-    ofxIntSlider hueMin;
-    ofxIntSlider hueMax;
-    ofxIntSlider satMin;
-    ofxIntSlider satMax;
-    
-    ofxToggle mirror;
-    ofxFloatSlider track1_hue;
-    ofxFloatSlider track1_sat;
-    ofxFloatSlider track1_bri;
-    ofxFloatSlider track2_hue;
-    ofxFloatSlider track2_sat;
-    ofxFloatSlider track2_bri;
+    ofParameter<int> hueMin[NUM];
+    ofParameter<int> hueMax[NUM];
+    ofParameter<int> satMin[NUM];
+    ofParameter<int> satMax[NUM];
+
+    ofParameter<int> track_hue[NUM];
+    ofParameter<int> track_sat[NUM];
+    ofParameter<int> track_bri[NUM];
+
     
     
     /*

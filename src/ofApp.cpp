@@ -5,23 +5,26 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
+    
+    //for MBP 2014,front camera
     originCamWidth = 1280;
     originCamHeight = 720;
+    
+    //for MBA mid-2011,front camera
+    originCamWidth = 640;
+    originCamHeight = 480;
 
     
-    camWidth = 320;
-    camHeight = (int)(originCamHeight /(originCamWidth/camWidth));
+    camWidth = 240;
+    camHeight = (int)camWidth * ((float)originCamHeight/(float)originCamWidth);
     
 
-    displayscale = ofGetScreenWidth()/camWidth;
-    
-    ofLog(OF_LOG_NOTICE,"w:%f",displayscale);
+    displayscale = ofGetWindowWidth()/camWidth;
     
     ofBackground(0, 0, 0);
-//    ofSetFrameRate(30);
     ofShowCursor();
     
-    
+//    ofSetFrameRate(30);
 //  ofSetVerticalSync(true);
     
 //  cameraDeviceID(use another camera )
@@ -50,34 +53,52 @@ void ofApp::setup(){
     
 
 
+    smooth.set("smooth",5,1,91);
+    threshold.set("threshold",0,0,256);
+    mirror.set("mirror", true);
     
+    displayset.setName("settings");
+    displayset.add(smooth);
+//    displayset.add(threshold);
+    displayset.add(mirror);
+
+    rangeset.setName("Ranges");
+    rangeset.add(satMin[0].set("[0]satMin",24,0,255));
+    rangeset.add(satMax[0].set("[0]satMax",200,0,255));
+    rangeset.add(hueMin[0].set("[0]hueMin",12,0,255));
+    rangeset.add(hueMax[0].set("[0]hueMax",12,0,255));
+
+    rangeset.add(satMin[1].set("[1]satMin",24,0,255));
+    rangeset.add(satMax[1].set("[1]satMax",200,0,255));
+    rangeset.add(hueMin[1].set("[1]hueMin",12,0,255));
+    rangeset.add(hueMax[1].set("[1]hueMax",12,0,255));
     
-    gui.setup();
-    gui.setPosition(camWidth*displayscale - 40,0);
-    gui.add(smooth.setup("smooth",5,1,91));
-    gui.add(threshold.setup("threshold",0,0,256));
-    
-    gui.add(satMin.setup("satMin",24,0,255));
-    gui.add(satMax.setup("satMax",200,0,255));
-    gui.add(hueMin.setup("hueMin",12,0,255));
-    gui.add(hueMax.setup("hueMax",12,0,255));
-    
-    gui.add(mirror.setup("mirror",true));
-    
-    gui.add(track1_hue.setup("trackhue1",0,0,255));
-    gui.add(track1_sat.setup("tracksat1",0,0,255));
-    gui.add(track1_bri.setup("trackbri1",0,0,255));
-    gui.add(track2_hue.setup("trackhue2",0,0,255));
-    gui.add(track2_sat.setup("tracksat2",0,0,255));
-    gui.add(track2_bri.setup("trackbri2",0,0,255));
 
     
+    colorset.setName("Pickup Color");
+    colorset.add(track_hue[0].set("[0]trackhue",0,0,255));
+    colorset.add(track_sat[0].set("[0]tracksat",0,0,255));
+    colorset.add(track_bri[0].set("[0]trackbri",0,0,255));
+    
+    
+    
+    colorset.add(track_hue[1].set("[1]trackhue",0,0,255));
+    colorset.add(track_sat[1].set("[1]tracksat",0,0,255));
+    colorset.add(track_bri[1].set("[1]trackbri",0,0,255));
+    
+    displayset.add(rangeset);
+    displayset.add(colorset);
+    
+    gui.setup(displayset);
+    gui.setPosition(ofGetWindowWidth()- 200,0);
     gui.loadFromFile("settings.xml");
     
     
     
 
-    
+    /**
+     * LightSaber Create
+     */
     LightSaber l1,l2;
     ofColor c1,c2;
     
@@ -86,15 +107,15 @@ void ofApp::setup(){
     
 
     l1.setup("LightSaber3.png",c1);
-    l1.track.hue = track1_hue;
-    l1.track.sat = track1_sat;
-    l1.track.bri = track1_bri;
+    l1.track.hue = track_hue[0];
+    l1.track.sat = track_sat[0];
+    l1.track.bri = track_bri[0];
     
 
     l2.setup("LightSaber3.png",c2);
-    l2.track.hue = track2_hue;
-    l2.track.sat = track2_sat;
-    l2.track.bri = track2_bri;
+    l2.track.hue = track_hue[1];
+    l2.track.sat = track_sat[1];
+    l2.track.bri = track_bri[1];
     
     
     ls.push_back(l1);
@@ -120,7 +141,7 @@ void ofApp::setup(){
         box.edges.back().get()->setPhysics(0.0, 0.5, 0.5);
     }
     
-    traceid = 1;
+    traceid = 0;
     
 
 
@@ -158,7 +179,7 @@ void ofApp::setup(){
     shader.setupShaderFromSource(GL_FRAGMENT_SHADER, shaderProgram);
     shader.linkProgram();
     
-    
+
 }
 
 //--------------------------------------------------------------
@@ -167,48 +188,46 @@ void ofApp::update(){
 
     vidGrabber.update();    //camera update
     
-    if (vidGrabber.isFrameNew())
-    {
-        fbo.begin();
-        if(mirror){
-            vidGrabber.draw(fbo.getWidth(), 0, -fbo.getWidth(), fbo.getHeight());
-        }
-        else{
-         vidGrabber.draw(0, 0, fbo.getWidth(), fbo.getHeight());
-        }
-        fbo.end();
-        
-        ofPixels pix;
-        fbo.readToPixels(pix);
-        
+    if(!vidGrabber.isFrameNew()){
 
-
-        colorImgHSV.setFromPixels(pix);
-        colorImgHSV.convertRgbToHsv();
-        
-        //colorImgHSV.threshold( threshold );
-        
-        //色相、彩度、明度にマッピング
-        colorImgHSV.convertToGrayscalePlanarImages(hueImg, satImg, briImg);
-
-        hueImg.flagImageChanged();
-        satImg.flagImageChanged();
-        briImg.flagImageChanged();
-        
-
-
+        return false;
     }
     
+    fbo.begin();
+    if(mirror){
+        vidGrabber.draw(fbo.getWidth(), 0, -fbo.getWidth(), fbo.getHeight());
+    }
+    else{
+     vidGrabber.draw(0, 0, fbo.getWidth(), fbo.getHeight());
+    }
+    fbo.end();
+    
+    ofPixels pix;
+    fbo.readToPixels(pix);
+    
 
+
+    colorImgHSV.setFromPixels(pix);
+    colorImgHSV.blurGaussian(smooth);
+    colorImgHSV.convertRgbToHsv();
+    
+    //colorImgHSV.threshold( threshold );
+
+    
+    //色相、彩度、明度にマッピング
+    colorImgHSV.convertToGrayscalePlanarImages(hueImg, satImg, briImg);
+
+    hueImg.flagImageChanged();
+    satImg.flagImageChanged();
+    briImg.flagImageChanged();
     
     //ピクセルの配列をそれぞれに作成
     unsigned char * huePixels = hueImg.getPixels();
     unsigned char * satPixels = satImg.getPixels();
-    unsigned char * briPixels = briImg.getPixels();
+    //    unsigned char * briPixels = briImg.getPixels();   //not use for upate
     
     //ピクセルの数
     int nPixels = camWidth*camHeight;
-    
     
     for(int t=0;t<ls.size();t++){
         
@@ -218,8 +237,8 @@ void ofApp::update(){
         //ピクセルの色が指定した色と色相と彩度が近ければ、
         //colorTrackedPixelsRedに255を、遠ければ0を代入。
         for (int i=0; i<nPixels; i++) {
-            if ( (huePixels[i]>=ls[t].track.hue - hueMin && huePixels[i] <= ls[t].track.hue + hueMax) &&
-                (satPixels[i]>=ls[t].track.sat-satMin && satPixels[i]<=ls[t].track.sat+satMax)){
+            if ( (huePixels[i]>=ls[t].track.hue - hueMin[t] && huePixels[i] <= ls[t].track.hue + hueMax[t]) &&
+                (satPixels[i]>=ls[t].track.sat-satMin[t] && satPixels[i]<=ls[t].track.sat+satMax[t])){
                 colorTrackedPixelsRed[i] = 255;
             }else {
                 colorTrackedPixelsRed[i]=0;
@@ -232,11 +251,9 @@ void ofApp::update(){
         reds.setFromPixels(colorTrackedPixelsRed, camWidth, camHeight);
         
         //輪郭線を見つける
-        //finderRed.findContours(reds, 10, nPixels/3, 2, false, true);
         finderRed.findContours(reds, 10, nPixels/3, 3, false, true);
         
         //colorTrackedPixelsRedをもとにtrackedTextureRedを作成
-        //これが二値画像になってるっぽい
         trackedTextureRed.loadData(colorTrackedPixelsRed,
                                    camWidth, camHeight, GL_LUMINANCE);
         
@@ -379,40 +396,27 @@ void ofApp::draw(){
     ofSetHexColor(0xffffff);
 
     
-//    ofPushMatrix();
-  //  ofScale(2.0, 2.0);
     shader.begin();
     shader.setUniform1f("brightness", 0.6); // 暗く
     //shader.setUniform1f("brightness", 1.5 ); // 明るく
     
-    //sampleImage.draw(0, 0);
-    
-    
-    float vr = (1440.0/originCamWidth);
-    if(mirror){
-        //元映像を表示
+    float vr = ((float)ofGetWindowWidth()/(float)originCamWidth);
 
+    if(mirror){
+        //show origin video
         vidGrabber.draw(originCamWidth *vr,0,-originCamWidth * vr,originCamHeight * vr);
-        //HSV系に変換したものを表示
-//        colorImgHSV.draw(camWidth*displayscale, 0,-camWidth*displayscale,camHeight*displayscale);
-        
     }
     else{
-       
-        //元映像を表示
+        //show origin video
         vidGrabber.draw(0,0,originCamWidth * vr,originCamHeight * vr);
-        
-        //HSV系に変換したものを表示
-    //    colorImgHSV.draw(camWidth, 0,camWidth/2,camHeight/2);
-
     }
-    
-
 
     for(int t=0;t<ls.size();t++){
         if(ls[t].delaypos.size() > 0 && ls[t].display )
             ls[t].draw();
     }
+    
+    
     shader.end();
 
     
@@ -420,10 +424,10 @@ void ofApp::draw(){
     
     if(showConsole){
         //二値画像を表示
-        trackedTextureRed.draw(0, originCamHeight * vr,camWidth/4,camHeight/4);
+        trackedTextureRed.draw(0, ofGetWindowHeight() - camHeight/4,camWidth/4,camHeight/4);
         
         //二値画像の方に輪郭線表示
-        finderRed.draw(camWidth/4,originCamHeight * vr,camWidth/4,camHeight/4);
+        finderRed.draw(camWidth/4,ofGetWindowHeight() - camHeight/4,camWidth/4,camHeight/4);
 
         
         gui.draw();
@@ -473,18 +477,9 @@ void ofApp::keyPressed(int key){
         if(ls[traceid].display)
             ls[traceid].hide();
         else{
-            if(traceid == 0){
-                ls[traceid].track.hue = track1_hue;// = huePixels[x+(y*hueImg.width)];
-                ls[traceid].track.sat = track1_sat;// = satPixels[x+(y*satImg.width)];
-                ls[traceid].track.bri = track1_bri;// = briPixels[x+(y*briImg.width)];
-                
-            }
-            else if(traceid == 1){
-                ls[traceid].track.hue = track2_hue;// = huePixels[x+(y*hueImg.width)];
-                ls[traceid].track.sat = track2_sat;// = satPixels[x+(y*satImg.width)];
-                ls[traceid].track.bri = track2_bri;// = briPixels[x+(y*briImg.width)];
-                
-            }
+            ls[traceid].track.hue = track_hue[traceid];// = huePixels[x+(y*hueImg.width)];
+            ls[traceid].track.sat = track_sat[traceid];// = satPixels[x+(y*satImg.width)];
+            ls[traceid].track.bri = track_bri[traceid];// = briPixels[x+(y*briImg.width)];
             
             ls[traceid].show();
         }
@@ -527,7 +522,7 @@ void ofApp::mouseReleased(int x, int y, int button){
     unsigned char * satPixels = satImg.getPixels();
     unsigned char * briPixels = briImg.getPixels();
     
-    float vr = 1440.0/camWidth;
+    float vr = (float)ofGetWindowWidth()/(float)camWidth;
     
     //クリックした場所の色を追跡する色に設定。
     x=MIN( x/vr,hueImg.width-1);
@@ -536,20 +531,10 @@ void ofApp::mouseReleased(int x, int y, int button){
     
     if (button==0) {
         
-        if(traceid == 0){
-            ls[traceid].track.hue = track1_hue = huePixels[x+(y*hueImg.width)];
-            ls[traceid].track.sat = track1_sat = satPixels[x+(y*satImg.width)];
-            ls[traceid].track.bri = track1_bri = briPixels[x+(y*briImg.width)];
-            ls[traceid].track.pos = ofVec2f(x,y);
-            
-        }
-        else if(traceid == 1){
-            ls[traceid].track.hue = track2_hue = huePixels[x+(y*hueImg.width)];
-            ls[traceid].track.sat = track2_sat = satPixels[x+(y*satImg.width)];
-            ls[traceid].track.bri = track2_bri = briPixels[x+(y*briImg.width)];
-            ls[traceid].track.pos = ofVec2f(x,y);
-            
-        }
+        ls[traceid].track.hue = track_hue[traceid] = huePixels[x+(y*hueImg.width)];
+        ls[traceid].track.sat = track_sat[traceid] = satPixels[x+(y*satImg.width)];
+        ls[traceid].track.bri = track_bri[traceid] = briPixels[x+(y*briImg.width)];
+        ls[traceid].track.pos = ofVec2f(x,y);
         
         
         ls[traceid].show();
@@ -561,13 +546,10 @@ void ofApp::mouseReleased(int x, int y, int button){
 void ofApp::windowResized(int w, int h){
     ofShowCursor();
 
-//    self.displayscale = w/self.camWidth;
-    displayscale = (float)w /camWidth;
-    
 
+    displayscale = (float)w /(float)camWidth;
 
-    ofLog(OF_LOG_NOTICE,"RESIZE1:%d:%f:%f",w,ofGetScreenWidth(),displayscale);
-    ofLog(OF_LOG_NOTICE,"RESIZE2:%f:%f",ofGetScreenWidth(),camWidth);
+    gui.setPosition(ofGetWindowWidth()- 200,0);
 }
 
 //--------------------------------------------------------------
