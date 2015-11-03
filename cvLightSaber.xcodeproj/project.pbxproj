@@ -100,6 +100,7 @@
 		DDEB207FFC7AA18FDDFA0D0F /* Kalman.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D34E8325652031B4DA36C921 /* Kalman.cpp */; };
 		DFACEC3A1E9D23315321D7EA /* ofxBox2dPolygon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F3392D405A715A07DCC8FAC2 /* ofxBox2dPolygon.cpp */; };
 		E008F49B1AEFC4AA00FFAA0D /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E008F4991AEFC4AA00FFAA0D /* ofApp.cpp */; };
+		E07207611BE84D7B00B5D282 /* README.md in Sources */ = {isa = PBXBuildFile; fileRef = E07207601BE84D7B00B5D282 /* README.md */; };
 		E0946C161AEFC39400BF1061 /* BoxObj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0946C121AEFC39400BF1061 /* BoxObj.cpp */; };
 		E0946C171AEFC39400BF1061 /* LightSaber.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E0946C141AEFC39400BF1061 /* LightSaber.cpp */; };
 		E212C821D1064B92DD953A42 /* ofxCvHaarFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A16CBF2E8CFE43AF54FE6F5 /* ofxCvHaarFinder.cpp */; };
@@ -421,6 +422,7 @@
 		DF49D76C45D5DB505A234880 /* ofxOscMessage.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxOscMessage.cpp; path = ../../../addons/ofxOsc/src/ofxOscMessage.cpp; sourceTree = SOURCE_ROOT; };
 		E008F4991AEFC4AA00FFAA0D /* ofApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ofApp.cpp; sourceTree = "<group>"; };
 		E008F49A1AEFC4AA00FFAA0D /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ofApp.h; sourceTree = "<group>"; };
+		E07207601BE84D7B00B5D282 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E0946C121AEFC39400BF1061 /* BoxObj.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BoxObj.cpp; sourceTree = "<group>"; };
 		E0946C131AEFC39400BF1061 /* BoxObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BoxObj.h; sourceTree = "<group>"; };
 		E0946C141AEFC39400BF1061 /* LightSaber.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = LightSaber.cpp; sourceTree = "<group>"; };
@@ -1262,6 +1264,7 @@
 		E4B69B4A0A3A1720003C02F2 = {
 			isa = PBXGroup;
 			children = (
+				E07207601BE84D7B00B5D282 /* README.md */,
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
@@ -1540,6 +1543,7 @@
 				9D0AA091FE805EB564CD05D0 /* b2RopeJoint.cpp in Sources */,
 				87C5C3DED336B7BB4A5D06D6 /* b2WeldJoint.cpp in Sources */,
 				684CFB2E4AC045640B3A61F8 /* b2WheelJoint.cpp in Sources */,
+				E07207611BE84D7B00B5D282 /* README.md in Sources */,
 				370CDDF0DD53C5453DBD3F22 /* b2Rope.cpp in Sources */,
 				E008F49B1AEFC4AA00FFAA0D /* ofApp.cpp in Sources */,
 				4CC0FD96DE77FF40BBCF8DD8 /* del_impl.cpp in Sources */,

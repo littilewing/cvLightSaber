@@ -1,0 +1,4 @@
+*~
+*.swp
+bin/*.app
+bin/data/settings.xml

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>C68FD494-F695-4349-ADA8-EC528CAA9847</string>
+	<key>IDESourceControlProjectName</key>
+	<string>cvLightSaber</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>677CA52B1AA51DE57F722C37AC14FB34FBB449DF</key>
+		<string>https://github.com/littilewing/cvLightSaber.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>cvLightSaber.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>677CA52B1AA51DE57F722C37AC14FB34FBB449DF</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/littilewing/cvLightSaber.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>677CA52B1AA51DE57F722C37AC14FB34FBB449DF</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>677CA52B1AA51DE57F722C37AC14FB34FBB449DF</string>
+			<key>IDESourceControlWCCName</key>
+			<string>cvLightSaber</string>
+		</dict>
+	</array>
+</dict>
+</plist>
